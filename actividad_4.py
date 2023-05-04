@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import tkinter as tk
+from tkinter import messagebox
 import os
 import eGela
 import Dropbox
@@ -114,7 +115,10 @@ def create_folder():
 ##########################################################################################################
 
 def check_credentials(event= None):
-    egela.check_credentials(username, password)
+    e = egela.check_credentials(username.get(), password.get())
+    
+    if e:
+        messagebox.showinfo("Alert Message", "Login incorrect!")
 
 def on_selecting1(event):
     global selected_items1

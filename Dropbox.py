@@ -32,13 +32,13 @@ class Dropbox:
         client_connection, client_address = server_socket.accept()
         eskaera = client_connection.recv(1024)
         print("\tRequest from the browser received at local server:")
-        print eskaera
+        print(eskaera)
 
         # buscar en solicitud el "auth_code"
         lehenengo_lerroa = eskaera.split('\n')[0]
         aux_auth_code = lehenengo_lerroa.split(' ')[1]
         auth_code = aux_auth_code[7:].split('&')[0]
-        print "\tauth_code: " + auth_code
+        print("\tauth_code: " + auth_code)
 
         # devolver una respuesta al usuario
         http_response = "HTTP/1.1 200 OK\r\n\r\n" \
