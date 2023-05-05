@@ -10,9 +10,10 @@ app_secret = 'rccw3i8guxcazjk'
 server_addr = "localhost"
 server_port = 3000
 redirect_uri = "http://" + server_addr + ":" + str(server_port)
+token_acceso='init'
 
 class Dropbox:
-   _access_token = ""
+   #_access_token=_access_token 
    _path = "/"
    _files = []
    _root = None
@@ -61,7 +62,8 @@ class Dropbox:
         json_respuesta = json.loads(respuesta.content)
         access_token = json_respuesta['access_token']
         print ("\tAccess_Token:"+ access_token)
-
+        global _access_token
+        _access_token=access_token
         return access_token
 
    def do_oauth(self):
@@ -75,38 +77,37 @@ class Dropbox:
         uri = 'https://' + servidor + recurso
         webbrowser.open_new(uri)
 
-        self.local_server()
-
+        inst=self.local_server()
+        
         self._root.destroy()
+        
 
-   def list_folder(self, msg_listbox):
-       print("/list_folder")
-       uri = 'https://api.dropboxapi.com/2/files/list_folder'
-       datos = {'path': ""}
-       datos_encoded = json.dumps(datos)
-
-       print("\tData: " + datos_encoded)
-       cabeceras = {'Host': 'api.dropboxapi.com',
-                    'Authorization': 'Bearer ' + self._access_token,
+   def list_folder(self):
+        print("/list_folder")
+        uri = 'https://api.dropboxapi.com/2/files/list_folder'
+        path = "/Aplicaciones"
+        datos = {'path': ""}
+        datos_encoded = json.dumps(datos)
+        print("\tData: " + datos_encoded)
+        print('Authorization Bearer '+ _access_token)
+        cabeceras = {'Host': 'api.dropboxapi.com',
+                    'Authorization': 'Bearer '+ _access_token,
                     'Content-Type': 'application/json'}
-       respuesta = requests.post(uri, headers=cabeceras, data=datos_encoded, allow_redirects=False)
-       status = respuesta.status_code
+        respuesta = requests.post(uri, headers=cabeceras, data=datos_encoded, allow_redirects=False)
+        status = respuesta.status_code
 
-       print("\tStatus: " + str(status))
-       contenido = respuesta.text
-       print("\tContenido:" + str(contenido))
-       contenido_json = json.loads(contenido)
+        print("\tStatus: " + str(status))
+        contenido = respuesta.text
+        print("\tContenido:" + str(contenido))
+        contenido_json = json.loads(contenido)
 
-       #Imprimir por consola los ficheros
-       print("\tStatus: " + str(status))
-       contenido = respuesta.text
-       print("\tContenido:" + str(contenido))
-       contenido_json = json.loads(contenido)
-
-
-       for entrie in contenido_json["entries"]:
-           print(entrie['name'])
-       self._files = helper.update_listbox2(msg_listbox, self._path, contenido_json)
+        print("Ficheros en " + path)
+        listaArchivos=[]
+        for entrie in contenido_json["entries"]:
+            print(entrie['name'])
+            listaArchivos.append(entrie['name'])
+        return(listaArchivos)
+            
 
    def transfer_file(self, file_path, file_data):
        print("/upload")
@@ -127,7 +128,7 @@ class Dropbox:
        url = "https://api.dropboxapi.com/2/files/delete_v2"
 
        headers = {
-           "Authorization": "Bearer " + self._access_token,
+           "Authorization": "Bearer " +  _access_token,
            "Content-Type": "application/json"
        }
 
@@ -143,7 +144,7 @@ class Dropbox:
        url = "https://api.dropboxapi.com/2/files/create_folder_v2"
 
        headers = {
-           "Authorization": "Bearer " +self._access_token,
+           "Authorization": "Bearer " + _access_token,
            "Content-Type": "application/json"
        }
 

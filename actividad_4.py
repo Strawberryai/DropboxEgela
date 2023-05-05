@@ -260,6 +260,8 @@ for each in pdfs:
     msg_listbox1.insert(tk.END, each['pdf_name'])
     msg_listbox1.yview(tk.END)
 
-dropbox.list_folder(msg_listbox2)
+for each in dropbox.list_folder():
+    msg_listbox2.insert(tk.END, each)
+    msg_listbox2.yview(tk.END)
 
 newroot.mainloop()
