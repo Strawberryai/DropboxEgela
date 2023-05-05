@@ -196,7 +196,6 @@ class eGela:
             time.sleep(0.01)
         
         popup.destroy()
-        print(self._refs)
 
         return self._refs
 
