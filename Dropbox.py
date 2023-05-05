@@ -22,7 +22,7 @@ class Dropbox:
        self._root = root
 
    def local_server(self):
-        redirect_uri="http://localhost:8010"
+        redirect_uri="http://localhost:"+server_port
         app_key="7u3tmn29kih8mst"
         app_secret="rccw3i8guxcazjk"
 
