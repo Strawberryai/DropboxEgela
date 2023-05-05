@@ -22,10 +22,14 @@ class Dropbox:
        self._root = root
 
    def local_server(self):
+        redirect_uri="http://localhost:8010"
+        app_key="7u3tmn29kih8mst"
+        app_secret="rccw3i8guxcazjk"
+
         servidor="www.dropbox.com"
         params={'response_type':'code',
-            'client_id':app_key,
-            'redirect_uri':redirect_uri}
+                'client_id':app_key,
+                'redirect_uri':redirect_uri}
         params_encoded=urllib.parse.urlencode(params)
         recurso='/oauth2/authorize?'+params_encoded
         uri="https://"+servidor+recurso
