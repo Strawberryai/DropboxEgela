@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 import tkinter as tk
-from tkinter import *
-from tkinter import messagebox
 import os
 import eGela
 import Dropbox
@@ -10,23 +8,6 @@ import time
 from urllib.parse import unquote
 
 ##########################################################################################################
-msg_listbox2 = None
-scrollbar2 = None
-
-def listarDropbox():
-    global msg_listbox2
-    
-    if msg_listbox2:
-        msg_listbox2.destroy()
-    
-    msg_listbox2 = make_listbox(messages_frame2)
-    msg_listbox2.bind('<<ListboxSelect>>', on_selecting2)
-    msg_listbox2.bind('<Double-Button-1>', on_double_clicking2)
-    msg_listbox2.pack(side=tk.RIGHT, fill=tk.BOTH)
-    
-    for each in dropbox.list_folder():
-        msg_listbox2.insert(tk.END, each)
-        msg_listbox2.yview(tk.END)
 
 def make_entry(parent, caption, width=None, **options):
     label = tk.Label(parent, text=caption)
@@ -37,23 +18,7 @@ def make_entry(parent, caption, width=None, **options):
     return entry
 
 def make_listbox(messages_frame):
-    global scrollbar2
-
     messages_frame.config(bd=1, relief="ridge")
-    try:
-        if messages_frame == messages_frame2:
-            if not scrollbar2:
-                scrollbar2 = tk.Scrollbar(messages_frame)
-                msg_listbox = tk.Listbox(messages_frame, height=20, width=70, exportselection=0, selectmode=tk.EXTENDED)
-                msg_listbox.configure(yscrollcommand=scrollbar.set)
-                scrollbar2.configure(command=msg_listbox.yview)
-                scrollbar2.pack(side=tk.RIGHT, fill=tk.Y)
-                return msg_listbox
-        
-        return tk.Listbox(messages_frame, height=20, width=70, exportselection=0, selectmode=tk.EXTENDED)
-    except NameError:
-        print()
-    
     scrollbar = tk.Scrollbar(messages_frame)
     msg_listbox = tk.Listbox(messages_frame, height=20, width=70, exportselection=0, selectmode=tk.EXTENDED)
     msg_listbox.configure(yscrollcommand=scrollbar.set)
@@ -91,11 +56,8 @@ def transfer_files():
         time.sleep(0.1)
 
     popup.destroy()
-    listarDropbox()
-   
-
-    #dropbox.list_folder(msg_listbox2)
-    #msg_listbox2.yview(tk.END)
+    dropbox.list_folder(msg_listbox2)
+    msg_listbox2.yview(tk.END)
 
 def delete_files():
     popup, progress_var, progress_bar = helper.progress("delete_file", "Deleting files...")
@@ -106,9 +68,9 @@ def delete_files():
 
     for each in selected_items2:
         if dropbox._path == "/":
-            path = "/" + Dropbox._files[each]
+            path = "/" + dropbox._files[each]['name']
         else:
-            path = dropbox._path + "/" + Dropbox._files[each]
+            path = dropbox._path + "/" + dropbox._files[each]['name']
             print (path)
         dropbox.delete_file(path)
 
@@ -117,7 +79,7 @@ def delete_files():
         progress_bar.update()
 
     popup.destroy()
-    listarDropbox()
+    dropbox.list_folder(msg_listbox2)
 
 def name_folder(folder_name):
     if dropbox._path == "/":
@@ -127,13 +89,13 @@ def name_folder(folder_name):
     dropbox.create_folder(dropbox._path)
     var.set(dropbox._path)
     dropbox._root.destroy()
-    listarDropbox()
+    dropbox.list_folder(msg_listbox2)
 
 def create_folder():
     popup = tk.Toplevel(newroot)
     popup.geometry('200x100')
     popup.title('Dropbox')
-    #popup.iconbitmap('./favicon.ico')
+    popup.iconbitmap('./favicon.ico')
     helper.center(popup)
 
     login_frame = tk.Frame(popup, padx=10, pady=10)
@@ -152,10 +114,7 @@ def create_folder():
 ##########################################################################################################
 
 def check_credentials(event= None):
-    e = egela.check_credentials(username.get(), password.get())
-    
-    if e:
-        messagebox.showinfo("Alert Message", "Login incorrect!")
+    egela.check_credentials(username.get(), password.get())
 
 def on_selecting1(event):
     global selected_items1
@@ -172,8 +131,9 @@ def on_selecting2(event):
 def on_double_clicking2(event):
     widget = event.widget
     selection = widget.curselection()
-    if selection[0] == 0 and dropbox._path != "/":
+    if selection[0] == 0 and dropbox._path != "":
         head, tail = os.path.split(dropbox._path)
+        head = "" if head == "/" else head
         dropbox._path = head
     else:
         selected_file = dropbox._files[selection[0]]
@@ -183,13 +143,12 @@ def on_double_clicking2(event):
             else:
                 dropbox._path = dropbox._path + '/' + selected_file['name']
     var.set(dropbox._path)
-    listarDropbox()
-
+    dropbox.list_folder(msg_listbox2)
 ##########################################################################################################
 # Login eGela
 root = tk.Tk()
 root.geometry('250x150')
-#root.iconbitmap("./favicon.ico") #
+root.iconbitmap('./favicon.ico') #
 root.title('Login eGela')
 helper.center(root)
 egela = eGela.eGela(root)
@@ -215,7 +174,7 @@ pdfs = egela.get_pdf_refs()
 # Login Dropbox
 root = tk.Tk()
 root.geometry('250x100')
-#root.iconbitmap('./favicon.ico')
+root.iconbitmap('./favicon.ico')
 root.title('Login Dropbox')
 helper.center(root)
 
@@ -236,7 +195,7 @@ root.mainloop()
 
 newroot = tk.Tk()
 newroot.geometry("850x400")
-#newroot.iconbitmap('./favicon.ico') #
+newroot.iconbitmap('./favicon.ico') #
 newroot.title("eGela -> Dropbox") #
 helper.center(newroot)
 
@@ -277,10 +236,11 @@ frame1.grid(row=1, column=1, ipadx=5, ipady=5)
 # Frame con ficheros en Dropbox (1,2)
 selected_items2 = None
 messages_frame2 = tk.Frame(newroot)
-#msg_listbox2 = make_listbox(messages_frame2)
-#msg_listbox2.bind('<<ListboxSelect>>', on_selecting2)
-#msg_listbox2.bind('<Double-Button-1>', on_double_clicking2)
-#msg_listbox2.pack(side=tk.RIGHT, fill=tk.BOTH)
+msg_listbox2 = make_listbox(messages_frame2)
+msg_listbox2.bind('<<ListboxSelect>>', on_selecting2)
+msg_listbox2.bind('<Double-Button-1>', on_double_clicking2)
+msg_listbox2.pack(side=tk.RIGHT, fill=tk.BOTH)
+
 #messages_frame2.pack()
 messages_frame2.grid(row=1, column=2, ipadx=10, ipady=10, padx=2, pady=2)
 
@@ -297,5 +257,6 @@ for each in pdfs:
     msg_listbox1.insert(tk.END, each['pdf_name'])
     msg_listbox1.yview(tk.END)
 
-listarDropbox()
+dropbox.list_folder(msg_listbox2)
+
 newroot.mainloop()
