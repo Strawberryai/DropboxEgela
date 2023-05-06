@@ -10,7 +10,8 @@ import time
 from urllib.parse import unquote
 
 ##########################################################################################################
-msg_listbox2=None
+msg_listbox2 = None
+scrollbar2 = None
 
 def listarDropbox():
     global msg_listbox2
@@ -36,7 +37,23 @@ def make_entry(parent, caption, width=None, **options):
     return entry
 
 def make_listbox(messages_frame):
+    global scrollbar2
+
     messages_frame.config(bd=1, relief="ridge")
+    try:
+        if messages_frame == messages_frame2:
+            if not scrollbar2:
+                scrollbar2 = tk.Scrollbar(messages_frame)
+                msg_listbox = tk.Listbox(messages_frame, height=20, width=70, exportselection=0, selectmode=tk.EXTENDED)
+                msg_listbox.configure(yscrollcommand=scrollbar.set)
+                scrollbar2.configure(command=msg_listbox.yview)
+                scrollbar2.pack(side=tk.RIGHT, fill=tk.Y)
+                return msg_listbox
+        
+        return tk.Listbox(messages_frame, height=20, width=70, exportselection=0, selectmode=tk.EXTENDED)
+    except NameError:
+        print()
+    
     scrollbar = tk.Scrollbar(messages_frame)
     msg_listbox = tk.Listbox(messages_frame, height=20, width=70, exportselection=0, selectmode=tk.EXTENDED)
     msg_listbox.configure(yscrollcommand=scrollbar.set)
@@ -167,6 +184,7 @@ def on_double_clicking2(event):
                 dropbox._path = dropbox._path + '/' + selected_file['name']
     var.set(dropbox._path)
     listarDropbox()
+
 ##########################################################################################################
 # Login eGela
 root = tk.Tk()
@@ -281,4 +299,3 @@ for each in pdfs:
 
 listarDropbox()
 newroot.mainloop()
-
