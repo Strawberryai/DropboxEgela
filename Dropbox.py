@@ -112,9 +112,11 @@ class Dropbox:
    def transfer_file(self, file_path, file_data):
        print("/upload")
        url = "https://content.dropboxapi.com/2/files/upload"
+       print("El path del arhcivo a subir es:"+file_path)
+       file_path=file_path.replace(" ","_")
 
        headers = {
-           "Authorization": "Bearer sl.BduVmI-7ff4RrpIVfwflBBiPe5v-79eynNgjRXulXtlvIj-njK1tOJr1V8J9oHnjaIW3FJmqYynQO2n5y4aohLvRYSZrBOPz_H9nCTrjtYu4MjfKo1ZprSZr278JfiePfRxZCKEG",
+           "Authorization": "Bearer "+_access_token,
            "Content-Type": "application/octet-stream",
            "Dropbox-API-Arg": "{\"path\":\"" + file_path + "\"}"
        }
@@ -122,6 +124,7 @@ class Dropbox:
        data = file_data
 
        r = requests.post(url, headers=headers, data=data)
+       print(r.status_code)
 
    def delete_file(self, file_path):
        print("/delete_file")
