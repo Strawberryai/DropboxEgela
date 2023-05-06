@@ -202,6 +202,6 @@ class eGela:
     def get_pdf(self, selection):
 
         print("\t##### descargando  PDF... #####")
-        pdf_content = res = requests.get(selection['pdf_url'], headers={'Cookie': self._cookie}, allow_redirects=True).content
-        
-        return selection['pdf_name'], pdf_content
+        pdf_content = requests.get(self._refs[selection]['pdf_url'], headers={'Cookie': self._cookie}, allow_redirects=True).content
+
+        return self._refs[selection]['pdf_name'], pdf_content

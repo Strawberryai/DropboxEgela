@@ -58,8 +58,13 @@ def transfer_files():
         time.sleep(0.1)
 
     popup.destroy()
-    dropbox.list_folder(msg_listbox2)
-    msg_listbox2.yview(tk.END)
+
+    for each in dropbox.list_folder():
+        msg_listbox2.insert(tk.END, each)
+        msg_listbox2.yview(tk.END)
+
+    #dropbox.list_folder(msg_listbox2)
+    #msg_listbox2.yview(tk.END)
 
 def delete_files():
     popup, progress_var, progress_bar = helper.progress("delete_file", "Deleting files...")
