@@ -11,15 +11,18 @@ from urllib.parse import unquote
 
 ##########################################################################################################
 msg_listbox2=None
-scrollbar2=None
+
 def listarDropbox():
     global msg_listbox2
+    
     if msg_listbox2:
-        msg_listbox2.delete()
+        msg_listbox2.destroy()
+    
     msg_listbox2 = make_listbox(messages_frame2)
     msg_listbox2.bind('<<ListboxSelect>>', on_selecting2)
     msg_listbox2.bind('<Double-Button-1>', on_double_clicking2)
     msg_listbox2.pack(side=tk.RIGHT, fill=tk.BOTH)
+    
     for each in dropbox.list_folder():
         msg_listbox2.insert(tk.END, each)
         msg_listbox2.yview(tk.END)
@@ -33,14 +36,8 @@ def make_entry(parent, caption, width=None, **options):
     return entry
 
 def make_listbox(messages_frame):
-    global scrollbar2
     messages_frame.config(bd=1, relief="ridge")
-    if(scrollbar2):
-        scrollbar2.destroy()
-    if(messages_frame==messages_frame2):
-        scrollbar2 = tk.Scrollbar(messages_frame)
-    else:
-        scrollbar = tk.Scrollbar(messages_frame)
+    scrollbar = tk.Scrollbar(messages_frame)
     msg_listbox = tk.Listbox(messages_frame, height=20, width=70, exportselection=0, selectmode=tk.EXTENDED)
     msg_listbox.configure(yscrollcommand=scrollbar.set)
     scrollbar.configure(command=msg_listbox.yview)
@@ -283,6 +280,5 @@ for each in pdfs:
     msg_listbox1.yview(tk.END)
 
 listarDropbox()
-
 newroot.mainloop()
 
