@@ -106,9 +106,9 @@ def delete_files():
 
     for each in selected_items2:
         if dropbox._path == "/":
-            path = "/" + dropbox._files[each]['name']
+            path = "/" + Dropbox._files[each]
         else:
-            path = dropbox._path + "/" + dropbox._files[each]['name']
+            path = dropbox._path + "/" + Dropbox._files[each]
             print (path)
         dropbox.delete_file(path)
 

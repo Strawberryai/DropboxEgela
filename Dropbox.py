@@ -10,12 +10,12 @@ app_secret = 'rccw3i8guxcazjk'
 server_addr = "localhost"
 server_port = 3000
 redirect_uri = "http://" + server_addr + ":" + str(server_port)
-token_acceso='init'
 
 class Dropbox:
    #_access_token=_access_token 
    _path = "/"
-   _files = []
+   global _files
+   
    _root = None
    _msg_listbox = None
 
@@ -106,6 +106,8 @@ class Dropbox:
         for entrie in contenido_json["entries"]:
             print(entrie['name'])
             listaArchivos.append(entrie['name'])
+        global _files
+        _files=listaArchivos
         return(listaArchivos)
             
 
