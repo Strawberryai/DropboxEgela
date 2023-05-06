@@ -109,8 +109,128 @@ def create_folder():
     send_button = tk.Button(login_frame, text="Send", command=lambda: name_folder(entry_field.get()))
     send_button.pack(side=tk.TOP)
     dropbox._root = popup
+def descargar():
+    popup, progress_var, progress_bar = helper.progress("dwonload_file_url", "Downloading files...")
+    progress = 0
+    progress_var.set(progress)
+    progress_bar.update()
+    progress_step = float(100.0 / len(selected_items2))
 
+    for each in selected_items2:
+        if dropbox._path == "/":
+            path = "/" + dropbox._files[each]['name']
+        else:
+            path = dropbox._path + "/" + dropbox._files[each]['name']
+            print (path)
+        dropbox.download_file(path)
 
+        progress += progress_step
+        progress_var.set(progress)
+        progress_bar.update()
+
+    popup.destroy()
+    dropbox.list_folder(msg_listbox2)
+
+def descargar_zip():
+    popup, progress_var, progress_bar = helper.progress("dwonload_folder", "Downloading folder...")
+    progress = 0
+    progress_var.set(progress)
+    progress_bar.update()
+    progress_step = float(100.0 / len(selected_items2))
+
+    for each in selected_items2:
+        if dropbox._path == "/":
+            path = "/" + dropbox._files[each]['name']
+        else:
+            path = dropbox._path + "/" + dropbox._files[each]['name']
+            print (path)
+        dropbox.download_folder(path)
+
+        progress += progress_step
+        progress_var.set(progress)
+        progress_bar.update()
+
+    popup.destroy()
+    dropbox.list_folder(msg_listbox2)
+
+def descargar_local():
+    popup, progress_var, progress_bar = helper.progress("dwonload_folder", "Downloading folder...")
+    progress = 0
+    progress_var.set(progress)
+    progress_bar.update()
+    progress_step = float(100.0 / len(selected_items2))
+
+    for each in selected_items2:
+        if dropbox._path == "/":
+            path = "/" + dropbox._files[each]['name']
+        else:
+            path = dropbox._path + "/" + dropbox._files[each]['name']
+            print (path)
+        dropbox.download_local(path)
+
+        progress += progress_step
+        progress_var.set(progress)
+        progress_bar.update()
+
+    popup.destroy()
+    dropbox.list_folder(msg_listbox2)
+def file_data():
+    popup, progress_var, progress_bar = helper.progress("File data", "Preparing preview for the folder...")
+    progress = 0
+    progress_var.set(progress)
+    progress_bar.update()
+    progress_step = float(100.0 / len(selected_items2))
+
+    for each in selected_items2:
+        if dropbox._path == "/":
+            path = "/" + dropbox._files[each]['name']
+        else:
+            path = dropbox._path + "/" + dropbox._files[each]['name']
+            print (path)
+        data=dropbox.file_data(path)
+        size=data[0]
+        when=data[1]
+        when=when.replace("T"," at ")
+        when=when.replace("Z","")
+        name=data[2]
+        path=data[3]
+        if not (size==""):
+            popup2 = tk.Toplevel(newroot)
+            popup2.geometry('400x100')
+            popup2.title('Dropbox')
+            popup2.iconbitmap('./favicon.ico')
+            data_frame = tk.Frame(popup2, padx=10, pady=10)
+            data_frame.pack(fill=tk.BOTH, expand=True)
+
+            
+            
+            helper.center(popup2)
+            label1 = tk.Label(data_frame, text="Size:"+str(size/1000000)+"MB")
+            label2=tk.Label(data_frame, text="Last mod:"+when)
+            label1.pack(side=tk.TOP)
+            label2.pack(side=tk.TOP)
+            label3 = tk.Label(data_frame, text="Name:"+name)
+            label4=tk.Label(data_frame, text="Path:"+path)
+            label3.pack(side=tk.TOP)
+            label4.pack(side=tk.TOP)
+            progress += progress_step
+            progress_var.set(progress)
+            progress_bar.update()
+        else:
+            popup2 = tk.Toplevel(newroot)
+            popup2.geometry('250x50')
+            popup2.title('Dropbox')
+            popup2.iconbitmap('./favicon.ico')
+            data_frame = tk.Frame(popup2, padx=10, pady=10)
+            data_frame.pack(fill=tk.BOTH, expand=True)
+            helper.center(popup2)
+            label1=tk.Label(data_frame, text="Use it only with Files, not directories")
+            label1.pack(side=tk.TOP)
+            
+
+    popup.destroy()
+    
+    dropbox.list_folder(msg_listbox2)
 ##########################################################################################################
 
 def check_credentials(event= None):
@@ -251,6 +371,14 @@ button2 = tk.Button(frame2, borderwidth=4, text="Delete", width=10, pady=8, comm
 button2.pack(padx=2, pady=2)
 button3 = tk.Button(frame2, borderwidth=4, text="Create folder", width=10, pady=8, command=create_folder)
 button3.pack(padx=2, pady=2)
+button4 = tk.Button(frame2, borderwidth=4, text="Download url", width=10, pady=8, command=descargar)
+button4.pack(padx=2, pady=2)
+button5= tk.Button(frame2, borderwidth=4, text="Download local", width=10, pady=8, command=descargar_local)
+button5.pack(padx=2, pady=2)
+button6= tk.Button(frame2, borderwidth=4, text="Download folder", width=10, pady=8, command=descargar_zip)
+button6.pack(padx=2, pady=2)
+button7= tk.Button(frame2, borderwidth=4, text="File data", width=10, pady=8, command=file_data)
+button7.pack(padx=2, pady=2)
 frame2.grid(row=1, column=3,  ipadx=10, ipady=10)
 
 for each in pdfs:

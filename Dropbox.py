@@ -4,6 +4,7 @@ import webbrowser
 from socket import AF_INET, socket, SOCK_STREAM
 import json
 import helper
+import os
 
 app_key = '7u3tmn29kih8mst'
 app_secret = 'rccw3i8guxcazjk'
@@ -104,6 +105,99 @@ class Dropbox:
             print("Path invalido")
             exit(1)
 
+    def download_file(self, file_path):
+        url = "https://api.dropboxapi.com/2/files/get_temporary_link"
+
+        headers = {
+            "Authorization": "Bearer "+self._access_token,
+            "Content-Type": "application/json"
+        }
+
+        data = {
+            "path": file_path
+        }
+
+        r = requests.post(url, headers=headers, data=json.dumps(data))
+        try:
+            print("url:"+str(json.loads(r.content)))
+            webbrowser.open_new(json.loads(r.content)['link'])
+        except:
+            print(file_path+" no es un path valido")
+
+    def download_folder(self, file_path):
+        url = "https://content.dropboxapi.com/2/files/download_zip"
+
+        headers = {
+            "Authorization": "Bearer "+self._access_token,
+            "Dropbox-API-Arg": "{\"path\":\"" + file_path + "\"}"
+        }
+
+
+        r = requests.post(url, headers=headers)
+        #print(str(r.content))
+        if r.status_code==200:
+            nombre_path= os.path.basename(os.path.normpath(file_path))
+            nombre_path=os.path.join("descargas",nombre_path)
+            if not os.path.isdir("descargas"):
+                os.mkdir("descargas")   
+            file = open(nombre_path, "wb")
+            file.write(r.content)
+            file.close()
+        else:
+            print("Ha habido un error")
+
+    def download_local(self, file_path):
+        url = "https://content.dropboxapi.com/2/files/download"
+
+        headers = {
+            "Authorization": "Bearer "+self._access_token,
+            "Dropbox-API-Arg": "{\"path\":\"" + file_path + "\"}"
+        }
+
+
+        r = requests.post(url, headers=headers)
+        print("status code:"+str(r.status_code))
+        #print(str(r.content))
+        if r.status_code==200:
+            nombre_path= os.path.basename(os.path.normpath(file_path))
+            nombre_path=os.path.join("descargas",nombre_path)
+            if not os.path.isdir("descargas"):
+                os.mkdir("descargas")   
+            file = open(nombre_path, "wb")
+            file.write(r.content)
+            file.close()
+        else:
+            print("Ha habido un error")
+
+    def file_data(self,file_path):
+        print("/preview")
+        url = "https://api.dropboxapi.com/2/files/get_metadata"
+
+        headers = {
+        "Authorization": "Bearer "+self._access_token,
+        "Content-Type": "application/json"
+        }
+        data = {
+            "path": file_path
+        }
+        
+
+        r = requests.post(url, headers=headers, data=json.dumps(data))
+        print(r.content)
+        try:
+            
+            print("Last_mod:"+str(json.loads(r.content)['client_modified']))
+            print("size:"+str(json.loads(r.content)['size']))
+            last_mod=json.loads(r.content)['server_modified']
+            size=json.loads(r.content)['size']
+            name=json.loads(r.content)['name']
+            path=json.loads(r.content)['path_display']
+            print(size,last_mod)
+            return([size,last_mod,name,path])
+        except:
+            print(file_path+" no es un path valido")
+            return (["","","",""])
+
     def transfer_file(self, file_path, file_data):
         print("/upload")
         url = "https://content.dropboxapi.com/2/files/upload"
@@ -139,7 +233,7 @@ class Dropbox:
         url = "https://api.dropboxapi.com/2/files/create_folder_v2"
 
         headers = {
-            "Authorization": "Bearer " + _access_token,
+            "Authorization": "Bearer " + self._access_token,
             "Content-Type": "application/json"
             }
         data = {"path": path}
